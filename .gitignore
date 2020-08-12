@@ -1,0 +1,15 @@
+target/
+out/
+build/
+dist/
+
+.classpath
+.factorypath
+.project
+.settings
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
