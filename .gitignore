@@ -2,6 +2,7 @@ target/
 out/
 build/
 dist/
+data/
 
 .classpath
 .factorypath

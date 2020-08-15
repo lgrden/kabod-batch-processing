@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
 
 @Configuration
+
 public class BankTransactionConfig {
 
     @Validated
@@ -15,4 +16,5 @@ public class BankTransactionConfig {
     public DataFeedProperties bankTransactionProperties() {
         return new DataFeedProperties();
     }
+
 }
