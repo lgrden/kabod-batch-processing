@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -48,16 +49,16 @@ public class BankTransactionFeed {
             log.error("Failed to create {} directory.", properties.getDestination());
             throw e;
         }
-        long count = 0;
-        for (int i = 0; i < properties.getFileCount() ; i++) {
-            File file = new File(properties.getDestination() + "/" + properties.getPrefix() + "_" + i + "_" + System.currentTimeMillis());
+        AtomicInteger count = new AtomicInteger();
+        IntStream.range(0, properties.getFileCount()).forEach(p -> {
+            File file = new File(properties.getDestination() + File.separator + properties.getPrefix() + "_" + p + "_" + System.currentTimeMillis());
             try {
-                count += writeToFile(file);
+                count.addAndGet(writeToFile(file));
             } catch (Exception e) {
                 log.error("Failed to write csv file {}.", file, e);
-                throw e;
+                throw new IllegalStateException(e);
             }
-        }
+        });
         long end = System.currentTimeMillis();
         log.error("Created {} files with total {} elements in {} ms.", properties.getFileCount(), count, (end - start));
     }

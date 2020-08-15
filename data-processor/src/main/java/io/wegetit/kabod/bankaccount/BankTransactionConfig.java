@@ -2,21 +2,6 @@ package io.wegetit.kabod.bankaccount;
 
 import com.opencsv.CSVReader;
 import io.wegetit.kabod.common.DataProcessorProperties;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,6 +17,21 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Configuration
 @EnableBatchProcessing
@@ -103,7 +103,7 @@ public class BankTransactionConfig {
     public Predicate<DataProcessorProperties> runBankTransactionJob() {
         return bankTransactionProperties -> {
             File dir = new File(bankTransactionProperties.getSource());
-            return dir.exists() && dir.isDirectory() && dir.list().length != 0;
+            return dir.exists() && dir.isDirectory() && Optional.ofNullable(dir.list()).orElse(ArrayUtils.toArray()).length != 0;
         };
     }
 }
