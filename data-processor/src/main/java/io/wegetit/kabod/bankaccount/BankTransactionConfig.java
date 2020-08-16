@@ -77,7 +77,7 @@ public class BankTransactionConfig {
                 throw e;
             }
             String[] files = Optional.ofNullable(new File(bankTransactionProperties.getSource()).list()).orElse(ArrayUtils.toArray());
-            String source = Stream.of(files).findFirst().orElse(null);
+            String source = Stream.of(files).filter(p -> StringUtils.startsWith(p ,bankTransactionProperties.getPrefix())).findFirst().orElse(null);
             if (StringUtils.isNotEmpty(source)) {
                 log.info("Processing {}.", source);
                 File sourceFile = new File(bankTransactionProperties.getSource() + File.separator + source);
@@ -103,7 +103,10 @@ public class BankTransactionConfig {
     public Predicate<DataProcessorProperties> runBankTransactionJob() {
         return bankTransactionProperties -> {
             File dir = new File(bankTransactionProperties.getSource());
-            return dir.exists() && dir.isDirectory() && Optional.ofNullable(dir.list()).orElse(ArrayUtils.toArray()).length != 0;
+            return dir.exists() && dir.isDirectory() &&
+                Stream.of( Optional.ofNullable(dir.list()).orElse(ArrayUtils.toArray()))
+                    .filter(p -> StringUtils.startsWith(p ,bankTransactionProperties.getPrefix()))
+                    .count() > 0;
         };
     }
 }

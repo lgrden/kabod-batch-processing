@@ -1,0 +1,50 @@
+version: '3.7'
+
+services:
+  kabod-mongo:
+    image: mongo:4.0.19
+    restart: always
+    container_name: shelby-kabod
+    ports:
+      - 27017:27017
+
+  kabod-data-feed:
+    image: kabod-data-feed
+    restart: always
+    container_name: kabod-data-feed
+    ports:
+      - 9088:9088
+    environment:
+      - SERVER_PORT=9097
+      - FEED_TRANSACTION_MINROWS=10000
+      - FEED_TRANSACTION_maxrows=12000
+      - FEED_TRANSACTION_FILECOUNT=5
+      - FEED_TRANSACTION_PREFIX=transactions
+      - FEED_TRANSACTION_DESTINATION=/usr/data/feed
+      - FEED_TRANSACTION_INITIALDELAY=1000
+      - FEED_TRANSACTION_FIXEDDELAY=60000
+    volumes:
+      - shred-data:/usr/data
+
+  kabod-data-processor:
+    image: kabod-data-processor
+    restart: always
+    container_name: kabod-data-processor
+    ports:
+      - 9090:9090
+    environment:
+      - SPRING_DATA_MONGODB_DATABASE=kabod-data-processor
+      - SPRING_DATA_MONGODB_HOST=kabod-mongo
+      - SPRING_DATA_MONGODB_PORT=27017
+      - PROCESSOR_TRANSACTION_PREFIX=transactions
+      - PROCESSOR_TRANSACTION_SOURCE=/usr/data/feed
+      - PROCESSOR_TRANSACTION_DESTINATION=/usr/data/processed
+      - processor_transaction_initialdelay=1000
+      - processor_transaction_fixeddelay=1000
+    depends_on:
+      - kabod-mongo
+    volumes:
+      - shred-data:/usr/data
+
+volumes:
+  shred-data:
