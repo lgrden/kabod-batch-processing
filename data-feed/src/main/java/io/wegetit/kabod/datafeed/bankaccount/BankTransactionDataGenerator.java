@@ -14,7 +14,7 @@ public class BankTransactionDataGenerator {
     private final List<BankAccount> BANK_ACCOUNTS = List.of(BankAccount.builder().iban("CH9300762011623852957").currency("CHF").build(),
             BankAccount.builder().iban("CH100023000A109822346").currency("CHF").build());
 
-    private final int DAYS_90_IN_SECONDS = 60*60*24*90;
+    private final static int DAYS_90_IN_SECONDS = 60*60*24*90;
 
     public BankTransaction generateBankTransaction() {
         BankAccount bankAccount = BANK_ACCOUNTS.get(ThreadLocalRandom.current().nextInt(BANK_ACCOUNTS.size()));

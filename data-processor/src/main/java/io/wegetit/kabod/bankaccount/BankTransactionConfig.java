@@ -105,8 +105,7 @@ public class BankTransactionConfig {
             File dir = new File(bankTransactionProperties.getSource());
             return dir.exists() && dir.isDirectory() &&
                 Stream.of( Optional.ofNullable(dir.list()).orElse(ArrayUtils.toArray()))
-                    .filter(p -> StringUtils.startsWith(p ,bankTransactionProperties.getPrefix()))
-                    .count() > 0;
+                    .anyMatch(p -> StringUtils.startsWith(p ,bankTransactionProperties.getPrefix()));
         };
     }
 }
