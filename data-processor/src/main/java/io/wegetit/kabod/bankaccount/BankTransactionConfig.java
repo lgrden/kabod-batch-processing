@@ -13,6 +13,7 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,11 +27,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Configuration
@@ -38,6 +40,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class BankTransactionConfig {
 
+    private final static int BATCH_SIZE = 1000;
     private final static DateTimeFormatter LOCAL_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Validated
@@ -64,36 +67,39 @@ public class BankTransactionConfig {
     }
 
     @Bean
-    public Tasklet processBankTransactions(DataProcessorProperties bankTransactionProperties, BankTransactionEntityService service) {
+    public Tasklet processBankTransactions(@Qualifier("bankTransactionProperties") DataProcessorProperties properties, BankTransactionEntityService service) {
         return (stepContribution, chunkContext) -> {
-            if (!runBankTransactionJob().test(bankTransactionProperties)) {
-                log.info("Nothing to process in {}.",bankTransactionProperties.getSource());
+            if (!runBankTransactionJob().test(properties)) {
+                log.info("Nothing to process in {}.",properties.getSource());
                 return RepeatStatus.FINISHED;
             }
             try {
-                Files.createDirectories(Paths.get(bankTransactionProperties.getDestination()));
+                Files.createDirectories(Paths.get(properties.getDestination()));
             } catch (IOException e) {
-                log.error("Failed to create {} directory.", bankTransactionProperties.getDestination());
+                log.error("Failed to create {} directory.", properties.getDestination());
                 throw e;
             }
-            String[] files = Optional.ofNullable(new File(bankTransactionProperties.getSource()).list()).orElse(ArrayUtils.toArray());
-            String source = Stream.of(files).filter(p -> StringUtils.startsWith(p ,bankTransactionProperties.getPrefix())).findFirst().orElse(null);
+            String[] files = Optional.ofNullable(new File(properties.getSource()).list()).orElse(ArrayUtils.toArray());
+            String source = Stream.of(files).filter(p -> StringUtils.startsWith(p ,properties.getPrefix())).findFirst().orElse(null);
             if (StringUtils.isNotEmpty(source)) {
                 log.info("Processing {}.", source);
-                File sourceFile = new File(bankTransactionProperties.getSource() + File.separator + source);
+                File sourceFile = new File(properties.getSource() + File.separator + source);
                 CSVReader reader = new CSVReader(new FileReader(sourceFile));
-                List<BankTransactionEntity> transactions = reader.readAll().stream().map(p -> BankTransactionEntity.builder()
-                    .id(UUID.randomUUID().toString())
-                    .source(source)
-                    .iban(p[0])
-                    .currency(p[1])
-                    .date(LocalDateTime.parse(p[2], LOCAL_DATE_TIME_FORMATTER))
-                    .amount(new BigDecimal(p[3]))
-                    .build()).collect(Collectors.toList());
+                AtomicInteger count = new AtomicInteger();
+                List<BankTransactionEntity> batch = new ArrayList<>(BATCH_SIZE);
+                while (reader.iterator().hasNext()) {
+                    batch.add(convert(source, reader.readNext()));
+                    if (batch.size() >= BATCH_SIZE) {
+                        service.saveAll(batch);
+                        count.addAndGet(batch.size());
+                        batch.clear();
+                    }
+                }
+                service.saveAll(batch);
+                count.addAndGet(batch.size());
                 reader.close();
-                service.saveAll(transactions);
-                log.info("Loaded {} elements.", transactions.size());
-                sourceFile.renameTo(new File(bankTransactionProperties.getDestination() + File.separator + source));
+                log.info("Processed {} elements.", count.get());
+                sourceFile.renameTo(new File(properties.getDestination() + File.separator + source));
             }
             return RepeatStatus.FINISHED;
         };
@@ -107,5 +113,16 @@ public class BankTransactionConfig {
                 Stream.of( Optional.ofNullable(dir.list()).orElse(ArrayUtils.toArray()))
                     .anyMatch(p -> StringUtils.startsWith(p ,bankTransactionProperties.getPrefix()));
         };
+    }
+
+    private BankTransactionEntity convert(String source, String[] row) {
+        return BankTransactionEntity.builder()
+            .id(UUID.randomUUID().toString())
+            .source(source)
+            .iban(row[0])
+            .currency(row[1])
+            .date(LocalDateTime.parse(row[2], LOCAL_DATE_TIME_FORMATTER))
+            .amount(new BigDecimal(row[3]))
+            .build();
     }
 }
