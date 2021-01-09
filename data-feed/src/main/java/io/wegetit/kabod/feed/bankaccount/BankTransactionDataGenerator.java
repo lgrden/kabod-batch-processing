@@ -1,4 +1,4 @@
-package io.wegetit.kabod.processor.datafeed.bankaccount;
+package io.wegetit.kabod.feed.bankaccount;
 
 import org.springframework.stereotype.Service;
 

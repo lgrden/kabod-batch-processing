@@ -1,4 +1,4 @@
-package io.wegetit.kabod.processor.datafeed;
+package io.wegetit.kabod.feed;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
