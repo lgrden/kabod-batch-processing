@@ -1,4 +1,4 @@
-package io.wegetit.kabod.bankaccount;
+package io.wegetit.kabod.processor.bankaccount;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;

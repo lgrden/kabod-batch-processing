@@ -1,6 +1,6 @@
-package io.wegetit.kabod.datafeed.bankaccount;
+package io.wegetit.kabod.processor.datafeed.bankaccount;
 
-import io.wegetit.kabod.datafeed.common.DataFeedProperties;
+import io.wegetit.kabod.processor.datafeed.common.DataFeedProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

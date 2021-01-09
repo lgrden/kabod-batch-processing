@@ -1,4 +1,4 @@
-package io.wegetit.kabod.bankaccount;
+package io.wegetit.kabod.processor.bankaccount;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

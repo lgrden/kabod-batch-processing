@@ -4,7 +4,7 @@ services:
   kabod-mongo:
     image: mongo:4.0.19
     restart: always
-    container_name: shelby-kabod
+    container_name: kabod-mongo
     ports:
       - 27017:27017
 

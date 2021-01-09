@@ -1,4 +1,4 @@
-package io.wegetit.kabod.datafeed.common;
+package io.wegetit.kabod.processor.datafeed.common;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;

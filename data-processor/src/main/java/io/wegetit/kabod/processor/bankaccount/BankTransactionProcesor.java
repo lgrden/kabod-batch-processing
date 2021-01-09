@@ -1,6 +1,6 @@
-package io.wegetit.kabod.bankaccount;
+package io.wegetit.kabod.processor.bankaccount;
 
-import io.wegetit.kabod.common.DataProcessorProperties;
+import io.wegetit.kabod.processor.common.DataProcessorProperties;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;

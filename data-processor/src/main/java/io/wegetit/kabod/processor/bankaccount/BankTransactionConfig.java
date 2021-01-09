@@ -1,7 +1,7 @@
-package io.wegetit.kabod.bankaccount;
+package io.wegetit.kabod.processor.bankaccount;
 
 import com.opencsv.CSVReader;
-import io.wegetit.kabod.common.DataProcessorProperties;
+import io.wegetit.kabod.processor.common.DataProcessorProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;

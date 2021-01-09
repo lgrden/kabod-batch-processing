@@ -1,4 +1,4 @@
-package io.wegetit.kabod.bankaccount;
+package io.wegetit.kabod.processor.bankaccount;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

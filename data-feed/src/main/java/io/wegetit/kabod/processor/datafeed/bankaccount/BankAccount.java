@@ -1,4 +1,4 @@
-package io.wegetit.kabod.datafeed.bankaccount;
+package io.wegetit.kabod.processor.datafeed.bankaccount;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

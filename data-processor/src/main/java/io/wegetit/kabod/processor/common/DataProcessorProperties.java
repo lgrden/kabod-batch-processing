@@ -1,4 +1,4 @@
-package io.wegetit.kabod.common;
+package io.wegetit.kabod.processor.common;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
