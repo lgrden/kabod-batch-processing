@@ -88,7 +88,11 @@ public class BankTransactionConfig {
                 AtomicInteger count = new AtomicInteger();
                 List<BankTransactionEntity> batch = new ArrayList<>(BATCH_SIZE);
                 while (reader.iterator().hasNext()) {
-                    batch.add(convert(source, reader.readNext()));
+                    String[] data = reader.readNext();
+                    if (ArrayUtils.isEmpty(data)) {
+                        continue;
+                    }
+                    batch.add(convert(source, data));
                     if (batch.size() >= BATCH_SIZE) {
                         service.saveAll(batch);
                         count.addAndGet(batch.size());

@@ -1,4 +1,4 @@
-package io.wegetit.kabod.feed.common;
+package io.wegetit.kabod.feed.config;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;

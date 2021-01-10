@@ -17,7 +17,7 @@ services:
     environment:
       - SERVER_PORT=9097
       - FEED_TRANSACTION_MINROWS=10000
-      - FEED_TRANSACTION_maxrows=12000
+      - FEED_TRANSACTION_MAXROWS=12000
       - FEED_TRANSACTION_FILECOUNT=5
       - FEED_TRANSACTION_PREFIX=transactions
       - FEED_TRANSACTION_DESTINATION=/usr/data/feed
@@ -39,8 +39,8 @@ services:
       - PROCESSOR_TRANSACTION_PREFIX=transactions
       - PROCESSOR_TRANSACTION_SOURCE=/usr/data/feed
       - PROCESSOR_TRANSACTION_DESTINATION=/usr/data/processed
-      - processor_transaction_initialdelay=1000
-      - processor_transaction_fixeddelay=1000
+      - PROCESSOR_TRANSACTION_INITIALDELAY=1000
+      - PROCESSOR_TRANSACTION_FIXEDDELAY=1000
     depends_on:
       - kabod-mongo
     volumes:

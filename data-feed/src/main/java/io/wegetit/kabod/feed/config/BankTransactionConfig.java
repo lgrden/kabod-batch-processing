@@ -1,13 +1,11 @@
-package io.wegetit.kabod.feed.bankaccount;
+package io.wegetit.kabod.feed.config;
 
-import io.wegetit.kabod.feed.common.DataFeedProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
 
 @Configuration
-
 public class BankTransactionConfig {
 
     @Validated
@@ -16,5 +14,4 @@ public class BankTransactionConfig {
     public DataFeedProperties bankTransactionProperties() {
         return new DataFeedProperties();
     }
-
 }
