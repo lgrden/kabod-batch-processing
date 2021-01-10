@@ -1,4 +1,4 @@
-package io.wegetit.kabod.processor.common;
+package io.wegetit.kabod.processor.config;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -23,4 +23,7 @@ public class DataProcessorProperties {
     @Min(100)
     @NotNull
     private Integer fixedDelay;
+    @Min(100)
+    @NotNull
+    private Integer batchSize;
 }

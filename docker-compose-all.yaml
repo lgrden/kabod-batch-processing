@@ -41,6 +41,7 @@ services:
       - PROCESSOR_TRANSACTION_DESTINATION=/usr/data/processed
       - PROCESSOR_TRANSACTION_INITIALDELAY=1000
       - PROCESSOR_TRANSACTION_FIXEDDELAY=1000
+      - PROCESSOR_TRANSACTION_BATCHSIZE=1000
     depends_on:
       - kabod-mongo
     volumes:

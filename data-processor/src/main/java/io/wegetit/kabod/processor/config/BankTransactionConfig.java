@@ -1,7 +1,8 @@
-package io.wegetit.kabod.processor.bankaccount;
+package io.wegetit.kabod.processor.config;
 
 import com.opencsv.CSVReader;
-import io.wegetit.kabod.processor.common.DataProcessorProperties;
+import io.wegetit.kabod.processor.bankaccount.BankTransactionEntity;
+import io.wegetit.kabod.processor.bankaccount.BankTransactionEntityService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,15 +23,11 @@ import org.springframework.validation.annotation.Validated;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -39,9 +36,6 @@ import java.util.stream.Stream;
 @EnableBatchProcessing
 @Slf4j
 public class BankTransactionConfig {
-
-    private final static int BATCH_SIZE = 1000;
-    private final static DateTimeFormatter LOCAL_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Validated
     @Bean
@@ -86,14 +80,14 @@ public class BankTransactionConfig {
                 File sourceFile = new File(properties.getSource() + File.separator + source);
                 CSVReader reader = new CSVReader(new FileReader(sourceFile));
                 AtomicInteger count = new AtomicInteger();
-                List<BankTransactionEntity> batch = new ArrayList<>(BATCH_SIZE);
+                List<BankTransactionEntity> batch = new ArrayList<>(properties.getBatchSize());
                 while (reader.iterator().hasNext()) {
                     String[] data = reader.readNext();
                     if (ArrayUtils.isEmpty(data)) {
                         continue;
                     }
-                    batch.add(convert(source, data));
-                    if (batch.size() >= BATCH_SIZE) {
+                    batch.add(BankTransactionEntity.of(source, data));
+                    if (batch.size() >= properties.getBatchSize()) {
                         service.saveAll(batch);
                         count.addAndGet(batch.size());
                         batch.clear();
@@ -117,16 +111,5 @@ public class BankTransactionConfig {
                 Stream.of( Optional.ofNullable(dir.list()).orElse(ArrayUtils.toArray()))
                     .anyMatch(p -> StringUtils.startsWith(p ,bankTransactionProperties.getPrefix()));
         };
-    }
-
-    private BankTransactionEntity convert(String source, String[] row) {
-        return BankTransactionEntity.builder()
-            .id(UUID.randomUUID().toString())
-            .source(source)
-            .iban(row[0])
-            .currency(row[1])
-            .date(LocalDateTime.parse(row[2], LOCAL_DATE_TIME_FORMATTER))
-            .amount(new BigDecimal(row[3]))
-            .build();
     }
 }
